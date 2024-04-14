@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Assistant</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <style>
+        body {
+            --body-background: #000; /* Complete black background */
+            --body-font-color: #FFF; /* White text */
+            --primary-color: #007bff; /* Light blue for primary elements, if needed */
+            --secondary-color: #0056b3; /* Darker blue for hover effects, if needed */
+            --container-background: #000; /* Black background for containers */
+            --button-background: #222; /* Darker button background */
+            --button-hover-background: #444; /* Even darker on hover */
+            --input-border-color: #555; /* Gray border for inputs */
+            background-color: var(--body-background);
+            color: var(--body-font-color);
+        }
+
+        .container, footer.container {
+            background-color: transparent;
+            color: var(--body-font-color);
+        }
+
+        h1, h2, h3, p {
+            color: var(--body-font-color);
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            color: var(--body-font-color);
+            text-decoration: none;
+        }
+
+        nav ul li a:hover {
+            color: var(--secondary-color);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        footer a {
+            color: var(--body-font-color);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: var(--secondary-color);
+        }
+
+        input[type="text"], input[type="number"], select, button {
+            background-color: #222;
+            color: #fff;
+            border: 1px solid var(--input-border-color);
+        }
+
+        button {
+            background-color: var(--button-background);
+        }
+
+        button:hover {
+            background-color: var(--button-hover-background);
+        }
+
+        p {
+            background-color: #333;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="container-fluid">
+        <ul>
+            <li><strong>Fitness Assistant</strong></li>
+        </ul>
+        <ul>
+            <li><a href="#workout">Workout Plan</a></li>
+            <li><a href="#meal">Meal Plan</a></li>
+            <li><a href="#bmi" role="button">BMI Calculator</a></li>
+        </ul>
+    </nav>
+    <main class="container">
+        <section id="workout">
+            <h2>Get Your Workout Plan</h2>
+            <img src="https://muscleevo.net/wp-content/uploads/2020/08/full-body-workout.jpg" alt="Fitness Image">
+            <input type="text" id="workoutRequirement" placeholder="e.g., 4 days workout split for muscle gain">
+            <button onclick="getWorkoutPlan()">Get Plan</button>
+            <p id="workoutPlan"></p>
+        </section>
+        <section id="meal">
+            <h2>Get Your Meal Plan</h2>
+            <img src="https://www.gasolfoundation.org/wp-content/uploads/2017/08/Plat-GASOL-FOUNDATION-Engl.png" alt="Healthy Food">
+            <select id="dietType">
+                <option value="veg">Vegetarian</option>
+                <option value="non-veg">Non-Vegetarian</option>
+            </select>
+            <select id="goal">
+                <option value="loss">Weight Loss</option>
+                <option value="gain">Muscle Gain</option>
+            </select>
+            <button onclick="getMealPlan()">Get Plan</button>
+            <p id="mealPlan"></p>
+        </section>
+        <section id="bmi">
+            <h2>Calculate Your BMI</h2>
+            <img src="https://mylistoflists.com/wp-content/uploads/2018/06/shutterstock_1293522544-1742x2048.jpg" alt="Gym Image">
+            <input type="number" id="height" placeholder="Height in meters" step="any">
+            <input type="number" id="weight" placeholder="Weight in kilograms" step="any">
+            <button onclick="calculateBMI()">Calculate BMI</button>
+            <p id="bmiResult"></p>
+        </section>
+    </main>
+    <footer class="container">
+        <small><a href="https://www.example.com/privacy">Privacy Policy</a> • <a href="https://www.example.com/terms">Terms of Service</a></small>
+    </footer>
+    <script>
+        function getWorkoutPlan() {
+            const workoutRequirement = document.getElementById('workoutRequirement').value;
+            fetch('/get_workout_plan', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({workout_requirement: workoutRequirement}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('workoutPlan').textContent = data.plan;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function getMealPlan() {
+            const dietType = document.getElementById('dietType').value;
+            const goal = document.getElementById('goal').value;
+            fetch('/get_meal_plan', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({diet_type: dietType, goal: goal}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('mealPlan').textContent = data.plan;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function calculateBMI() {
+            const height = parseFloat(document.getElementById('height').value);
+            const weight = parseFloat(document.getElementById('weight').value);
+            fetch('/calculate_bmi', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({height: height, weight: weight}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('bmiResult').textContent = `Your BMI is ${data.bmi}`;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
