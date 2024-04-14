@@ -5,7 +5,7 @@ import os
 app = Flask(__name__)
 
 # Ensure you have your OpenAI API key set as an environment variable
-openai.api_key =("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")
+openai.api_key =("YOUR API KEY")
 
 def generate_with_openai(prompt):
     response = openai.ChatCompletion.create(
